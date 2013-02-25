@@ -1,12 +1,14 @@
 # Gist.tmbundle
 
-A TextMate 2 bundle to create, get and update GitHub gists.
+A TextMate 2 bundle to create, get and update GitHub gists. 
+
+A command-line version is available at [hiltmon/gist](https://github.com/hiltmon/gist).
 
 ## Usage
 
 **Warning:** Before you can create, update or pick gists, you need to set up Authentication (see below)
 
-Hit `⌃⌘G` to bring up the Gists menu:
+In TextMate, hit `⌃⌘G` to bring up the Gists menu (or pick it from the `cog` menu in the status bar):
 
 * **Get Gist:** Brings up a dialog where you can paste the Gist ID or URL to retrieve. If any text is selected, it guesses the last number is the gist id. *Get Gist* downloads all the files in the gist to the current folder, saves them and opens them in TextMate 2. **Note:** If a file name already exists, *Get Gist* overwrites it.
 * **Pick my Gists:** Displays up to 100 (API limit) of your own Gists to get. Select a gist to download all the files in that gist, save them and open them in TextMate. **Note:** If a file name already exists, *Pick my Gist* overwrites it.
@@ -18,12 +20,12 @@ Hit `⌃⌘G` to bring up the Gists menu:
 
 Some limitations to be aware of:
 
-* Gists have no path information, so be careful to use unique file names for gists. This bundle will map a unique file name to a unique gist id. If the same file name exists elsewhere, this bundle will assume its the same file from the gist.
+* Gists have no path information, so be careful to use unique file names for files in gists. This bundle will map a unique file name to a unique gist id. If the same file name exists elsewhere, this bundle will assume its the same file from another gist.
 * Although you can download multi-file gists, the create and update processes only work with the current file.
 
 ## The Cache
 	
-This plugin caches the mapping between file names and gist id's in the file `~/.gists`. This cache is shared with my cached gist gem for command line use. The bundle uses this cache to enable updates to gists without the user having to remember gist id's (and because TextMate does not have any way to add custom attributes to open files).
+This plugin caches the mapping between file names and gist id's in the file `~/.gists`. This cache is shared with my [cached gist command](https://github.com/hiltmon/gist) for command line use. The bundle uses this cache to enable updates to gists without the user having to remember gist id's (and because TextMate does not have any way to add custom attributes to open files).
 
 ## Installation
 
@@ -31,7 +33,7 @@ To install via Git:
 
     mkdir -p ~/Library/Application\ Support/TextMate/Bundles
     cd ~/Library/Application\ Support/TextMate/Bundles
-    git clone git://github.com/hiltmon/Gist.git "Gist.tmbundle"
+    git clone git://github.com/hiltmon/Gist.tmbundle.git "Gist.tmbundle"
     osascript -e 'tell app "TextMate" to reload bundles'
 
 ## Authentication
