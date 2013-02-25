@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require "#{ENV['TM_SUPPORT_PATH']}/lib/tm/save_current_document"
+require "#{ENV["TM_BUNDLE_SUPPORT"]}/bin/gistmate.rb"
+
+TextMate.save_current_document()
+
+Gistmate.new().create(ENV['TM_FILEPATH'], true) # is_private =&gt; true
+</string>
+	<key>input</key>
+	<string>document</string>
+	<key>inputFormat</key>
+	<string>text</string>
+	<key>keyEquivalent</key>
+	<string>^@g</string>
+	<key>name</key>
+	<string>Create Private Gist</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>text</string>
+	<key>outputLocation</key>
+	<string>discard</string>
+	<key>uuid</key>
+	<string>03637704-4680-466B-ACA4-5BEC0A3FDEA7</string>
+	<key>version</key>
+	<integer>2</integer>
+</dict>
+</plist>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>uvygzba@tznvy.pbz</string>
+	<key>contactName</key>
+	<string>Hilton Lipschitz</string>
+	<key>description</key>
+	<string>A bundle for getting, creating and updating Gists.</string>
+	<key>name</key>
+	<string>Gist</string>
+	<key>mainMenu</key>
+	<dict>
+    <key>items</key>
+		<array>
+			<string>41467F40-A75B-4768-8D72-C97B00852AEB</string>
+			<string>EB4520AD-EF63-4191-95C5-2957ED3CFFDE</string>
+			<string>8836D99F-9BB6-47A9-927F-5D703CBE91A6</string>
+			<string>11339806-DC72-4F94-937D-79E8E70E7928</string>
+			<string>824C4960-4FCA-4518-AB5C-20B1CD1094AE</string>
+			<string>------------------------------------</string>
+			<string>33546AFF-ED8E-4F3F-8D48-910986413C65</string>
+			<string>03637704-4680-466B-ACA4-5BEC0A3FDEA7</string>
+    </array>
+  </dict>
+  
+	<key>uuid</key>
+	<string>60574957-44FF-4C5E-ADEE-9FF7AD7ECEF4</string>
+</dict>
+</plist>
