@@ -234,7 +234,7 @@ class Gistmate
     unless files_array.nil?
       # Open em
       files_array.each do |file_name|
-        %x{mate "#{file_name}"}
+        %x{"$TM_SUPPORT_PATH/bin/mate" "#{file_name}"}
       end
     end
   end
