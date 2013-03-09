@@ -101,7 +101,7 @@ class Gistmate
     filename = File.basename(path)
     text = url_gist(filename)
     TextMate.exit_show_html(no_gist_message) if text.nil?
-    %x{open #{text}}
+    %x{open #{e_sh text}}
   end
   
   def update(path)
@@ -234,7 +234,7 @@ class Gistmate
     unless files_array.nil?
       # Open em
       files_array.each do |file_name|
-        %x{"$TM_SUPPORT_PATH/bin/mate" "#{file_name}"}
+        %x{"$TM_SUPPORT_PATH/bin/mate" #{e_sh file_name}}
       end
     end
   end
