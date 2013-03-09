@@ -18,7 +18,7 @@ Gistmate.new().get(ENV['TM_SELECTED_TEXT'])
 	<key>keyEquivalent</key>
 	<string>^@g</string>
 	<key>name</key>
-	<string>Get Gist</string>
+	<string>Get Gist…</string>
 	<key>outputCaret</key>
 	<string>afterOutput</string>
 	<key>outputFormat</key>

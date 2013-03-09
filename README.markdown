@@ -24,17 +24,18 @@ Some limitations to be aware of:
 * Although you can download multi-file gists, the create and update processes only work with the current file.
 
 ## The Cache
-	
+
 This plugin caches the mapping between file names and gist id's in the file `~/.gists`. This cache is shared with my [cached gist command](https://github.com/hiltmon/gist) for command line use. The bundle uses this cache to enable updates to gists without the user having to remember gist id's (and because TextMate does not have any way to add custom attributes to open files).
 
 ## Installation
 
+You can find this bundle in TextMate → Preferences → Bundles → Gist where it can be enabled.
+
 To install via Git:
 
-    mkdir -p ~/Library/Application\ Support/TextMate/Bundles
-    cd ~/Library/Application\ Support/TextMate/Bundles
-    git clone git://github.com/hiltmon/Gist.tmbundle.git "Gist.tmbundle"
-    osascript -e 'tell app "TextMate" to reload bundles'
+    mkdir -p ~/Library/Application\ Support/Avian/Bundles
+    cd ~/Library/Application\ Support/Avian/Bundles
+    git clone git://github.com/hiltmon/Gist.tmbundle
 
 ## Authentication
 

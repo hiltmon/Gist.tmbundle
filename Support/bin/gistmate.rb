@@ -42,7 +42,7 @@ require 'fileutils'
 require "#{ENV['TM_SUPPORT_PATH']}/lib/exit_codes.rb"
 require "#{ENV['TM_SUPPORT_PATH']}/lib/escape.rb"
 require "#{ENV['TM_SUPPORT_PATH']}/lib/ui.rb"
-require ENV['TM_SUPPORT_PATH'] + '/lib/tm/htmloutput'
+require "#{ENV['TM_SUPPORT_PATH']}/lib/osx/plist"
 
 class Gistmate
   
@@ -73,7 +73,7 @@ class Gistmate
   end
   
   def pick()
-    TextMate.exit_show_html(no_auth_message) if no_auth?
+    abort_no_auth if no_auth?
     user, _ = auth()
     results = list_gists(user)
     
@@ -93,23 +93,23 @@ class Gistmate
   def url(path)
     filename = File.basename(path)
     text = url_gist(filename)
-    TextMate.exit_show_html(no_gist_message) if text.nil?
+    abort_no_gist if text.nil?
     TextMate.exit_show_tool_tip("'#{text}' Copied to Clipboard.") unless text.nil?
   end
   
   def view_on_web(path)
     filename = File.basename(path)
     text = url_gist(filename)
-    TextMate.exit_show_html(no_gist_message) if text.nil?
-    %x{open #{text}}
+    abort_no_gist if text.nil?
+    %x{open #{e_sh text}}
   end
   
   def update(path)
-    TextMate.exit_show_html(no_auth_message) if no_auth?
+    abort_no_auth if no_auth?
     filename = File.basename(path)
     
     gist_id = get_id_from_cache(filename)
-    TextMate.exit_show_html(no_gist_message) if gist_id.nil?
+    abort_no_gist if gist_id.nil?
 
     response = api_post_request([path], gist_id)
     unless response.nil?
@@ -119,11 +119,11 @@ class Gistmate
   end
   
   def create(path, is_private)
-    TextMate.exit_show_html(no_auth_message) if no_auth?
+    abort_no_auth if no_auth?
     filename = File.basename(path)
     
     gist_id = get_id_from_cache(filename)
-    TextMate.exit_show_html(is_gist_message) unless gist_id.nil?
+    abort_gist_already_exist unless gist_id.nil?
     
     gist_id = create_gist(filename, is_private)
     unless gist_id.nil?
@@ -186,47 +186,21 @@ class Gistmate
     nil
   end
   
-  def no_auth_message
-    TextMate::HTMLOutput.show(
-      :title      => "GitHub Authentication Error"
-    ) do |io|
-      io << <<-HTML
-        <h3 class="error">GitHub Authentication is not set up.</h3>
-
-        <p>The gists bundle needs your github user name and password to compleet this action.</p>
-
-        <p>Either add github.user and github.password to your global git config, or set the
-          GITHUB_USER and GITHUB_PASSWORD environment variables.</p>
-      HTML
-    end
+  def abort_no_auth
+    %x{ "$DIALOG" >/dev/null alert --title "GitHub authentication error." --body "To setup authentication you should run the following in a terminal:\n\ngit config --global github.user «username»\ngit config --global github.password «password»" --button1 OK }
+    TextMate.exit_discard
   end
   
-  def no_gist_message
-    TextMate::HTMLOutput.show(
-      :title      => "Gist Error"
-    ) do |io|
-      io << <<-HTML
-        <h3 class="error">Unknown Gist.</h3>
-
-        <p>This file is not part of a known gist. Either <strong>Create Gist</strong> to
-          create a new gist, or <strong>Get Gist</strong> to retrieve a gist before
-          editing. <strong>Warning:</strong> Get Gist will overwrite this file.</p>
-      HTML
-    end
+  def abort_no_gist
+    %x{ "$DIALOG" >/dev/null alert --title "No known gist for “${TM_DISPLAYNAME}”." --body "Either use “Create Gist” to register “${TM_DISPLAYNAME}” as a new gist, or use “Get Gist…” to retrieve an existing gist." --button1 OK }
+    TextMate.exit_discard
   end
 
-  def is_gist_message
-    TextMate::HTMLOutput.show(
-      :title      => "Gist Error"
-    ) do |io|
-      io << <<-HTML
-        <h3 class="error">Gist already Created!</h3>
-
-        <p>This file is part of a known gist. Either <strong>Update Gist</strong> to
-          update it, or remove this gist from the cache and try again. The cache can
-          be found in <code>~/.gists</code></p>
-      HTML
-    end
+  def abort_gist_already_exist
+    plist = %x{ "$DIALOG" alert --title "A gist already exist for “${TM_DISPLAYNAME}”." --body "You can use “Update Gist” to update the online version.\n\nIf you want to force create a new gist for this document then you must first remove the existing one from the cache." --button1 OK --button2 "Edit Cache" }
+    hash = OSX::PropertyList::load(plist)
+    %x{"$TM_SUPPORT_PATH/bin/mate" -tsource.yaml #{e_sh CACHE_FILE_PATH}} if hash['buttonClicked'].to_i == 1
+    TextMate.exit_discard
   end
   
   def textmate_get_gist(gist_id)
@@ -234,7 +208,7 @@ class Gistmate
     unless files_array.nil?
       # Open em
       files_array.each do |file_name|
-        %x{mate "#{file_name}"}
+        %x{"$TM_SUPPORT_PATH/bin/mate" #{e_sh file_name}}
       end
     end
   end
