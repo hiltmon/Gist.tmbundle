@@ -39,10 +39,12 @@ require 'json'
 require 'optparse'
 require 'yaml'
 require 'fileutils'
+require 'tempfile'
 require "#{ENV['TM_SUPPORT_PATH']}/lib/exit_codes.rb"
 require "#{ENV['TM_SUPPORT_PATH']}/lib/escape.rb"
 require "#{ENV['TM_SUPPORT_PATH']}/lib/ui.rb"
 require "#{ENV['TM_SUPPORT_PATH']}/lib/osx/plist"
+require "#{ENV['TM_SUPPORT_PATH']}/lib/progress"
 
 class Gistmate
   
@@ -111,11 +113,42 @@ class Gistmate
     gist_id = get_id_from_cache(filename)
     abort_no_gist if gist_id.nil?
 
-    response = api_post_request([path], gist_id)
+    response = api_post_request([path], "Updating Gist #{gist_id}...", gist_id)
     unless response.nil?
       to_pasteboard(gist_id)
       TextMate.exit_show_tool_tip("'#{gist_id}' Updated.")
     end    
+  end
+  
+  def add_file_to_gist(path)
+    abort_no_auth if no_auth?
+    filename = File.basename(path)
+    
+    gist_id = get_id_from_cache(filename)
+    abort_gist_already_exist unless gist_id.nil?
+    
+    # Bring up the pick list to add this file
+    user, _ = auth()
+    results = list_gists(user)
+    
+    # Show pick list
+    line = TextMate::UI.request_item(
+      :title => "Pick a Gist",
+      :prompt => "Select a Gist to Add To:",
+      :items => results,
+      :button1 => 'Add To Gist'
+    )
+    TextMate.exit_discard if line == nil
+    
+    # Ok, we have a line, first token is the gist id
+    gist_id = line.split(',')[0]
+    
+    response = api_post_request([path], "Adding to Gist #{gist_id}...", gist_id)
+    unless response.nil?
+      append_to_cache(gist_id, filename)
+      to_pasteboard(gist_id)
+      TextMate.exit_show_tool_tip("'#{gist_id}' Added To.")
+    end   
   end
   
   def create(path, is_private)
@@ -131,16 +164,44 @@ class Gistmate
     end
   end
   
+  def create_from_selection(content)
+    abort_no_auth if no_auth?
+    abort_no_selection if content.nil? || content.length == 0
+    
+    gist_id = create_temp_gist(content)
+    unless gist_id.nil?
+      TextMate.exit_show_tool_tip("'#{gist_id}' Created.")
+    end
+  end
+  
   protected
     
   def create_gist(filename, is_private)
-    response = api_post_request([filename], nil, is_private)
+    response = api_post_request([filename], "Creating New Gist...", nil, is_private)
     unless response.nil?
       gist_id = response["id"]
       cache_gist(gist_id, [filename])
       to_pasteboard(gist_id)
       return gist_id
     end
+    nil
+  end
+  
+  def create_temp_gist(content)
+    temp_file = Tempfile.new('xyzzy-gist')
+    File.open(temp_file.path, "w") do |f| # Ruby 1.8 Style (not IO.write)
+      f << content
+    end
+    
+    response = api_post_request([temp_file.path], "Creating New Uncached Gist...", nil, false)
+    unless response.nil?
+      gist_id = response["id"]
+      to_pasteboard(gist_id)
+      temp_file.close
+      return gist_id
+    end
+    
+    temp_file.close
     nil
   end
   
@@ -162,7 +223,7 @@ class Gistmate
   end
   
   def list_gists(user)
-    response = api_get_request(USER_URL % user)
+    response = api_get_request(USER_URL % user, "Retrieving List of Gists...")
     results = []
     unless response.nil?
       response.each do |line|
@@ -191,6 +252,11 @@ class Gistmate
     TextMate.exit_discard
   end
   
+  def abort_no_selection
+    %x{ "$DIALOG" >/dev/null alert --title "Nothing Selected." --body "To create a Gist from a selection, you need to select a block of text or code. Note that this new gist will not be cached" --button1 OK }
+    TextMate.exit_discard
+  end
+  
   def abort_no_gist
     %x{ "$DIALOG" >/dev/null alert --title "No known gist for “${TM_DISPLAYNAME}”." --body "Either use “Create Gist” to register “${TM_DISPLAYNAME}” as a new gist, or use “Get Gist…” to retrieve an existing gist." --button1 OK }
     TextMate.exit_discard
@@ -214,7 +280,7 @@ class Gistmate
   end
   
   def retrieve_gist(params)
-    api_get_request(GIST_URL + "/#{params}")
+    api_get_request(GIST_URL + "/#{params}", "Retrieving Gist Files...")
   end
   
   def extract_content(data, key)
@@ -226,7 +292,7 @@ class Gistmate
     # data["files"].map{|name, content| content['filename'] }.join("\n\n")
   end
   
-  def api_get_request(url, params = nil)
+  def api_get_request(url, message, params = nil)
     uri = URI(url)
     uri.query = URI.encode_www_form(params) if params
         
@@ -235,8 +301,13 @@ class Gistmate
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     
     request = Net::HTTP::Get.new(uri.request_uri)
-    
-    response = http.request(request)
+
+    response = TextMate.call_with_progress(:title => 'Gists Progress', 
+      :cancel => lambda { TextMate.exit_discard },
+      :message => message) do
+        
+      http.request(request)
+    end
     if response.code.to_i >= 300
       puts "Failed: #{response.code}: #{response.body}"
       return nil
@@ -244,7 +315,7 @@ class Gistmate
     JSON.parse(response.body)
   end
   
-  def api_post_request(file_names, id = nil, is_private = false)
+  def api_post_request(file_names, message, id = nil, is_private = false)
     url = GIST_URL
     url = "#{url}/#{id}" unless id.nil?
     uri = URI(url)
@@ -262,7 +333,12 @@ class Gistmate
       request.basic_auth(user, password)
     end
 
-    response = http.request(request)
+    response = TextMate.call_with_progress(:title => 'Gists Progress', 
+      :cancel => lambda { TextMate.exit_discard },
+      :message => message) do
+        
+      http.request(request)
+    end
     # puts response.code
     # puts response.body
     if response.code.to_i >= 300
@@ -275,7 +351,11 @@ class Gistmate
   def make_data(file_names, id, is_private)
     file_data = {}
     file_names.each do |file_name|
-      file_data[File.basename(file_name)] = {:content => IO.read(file_name).to_s }
+      if File.basename(file_name) =~ /^xyzzy-gist/
+        file_data[""] = {:content => IO.read(file_name).to_s }
+      else
+        file_data[File.basename(file_name)] = {:content => IO.read(file_name).to_s }
+      end
     end
 
     data = {"files" => file_data}
@@ -340,6 +420,12 @@ class Gistmate
       return key if cache[key].split(',').index(file_name)
     end
     nil
+  end
+  
+  def append_to_cache(key, filename)
+    cache = load_cache
+    cache[key] << "," + filename
+    save_cache(cache)
   end
   
   def to_pasteboard(gist_id)

@@ -15,13 +15,15 @@ In TextMate, hit `⌃⌘G` to bring up the Gists menu (or pick it from the `cog`
 * **Copy Gist URL:** Copies the current file's Gist URL to the clipboard if the file is a cached gist.
 * **View Gist On Web:** Opens the current file's Gist URL in the default browser if the file is a cached gist.
 * **Update Gist:** Updates the current file for the Gist on the web if the file is a cached gist.
+* **Add File to Gist:** Brings up a list of your gists and enables you to add the current file to the gist you choose.
 * **Create Public Gist:** Creates a new public gist containing the current file's contents. Leaves the URL of the new gist on the clipboard.
 * **Create Private Gist:** Creates a new private to you only gist containing the current file's contents. Leaves the URL of the new gist on the clipboard.
+* **Gist from Selection:** Creates a new *public* gist with the contents of the selection, leaving the URL of the new gist on the clipboard. Note that these gists are not cached as they have no file names.
 
 Some limitations to be aware of:
 
 * Gists have no path information, so be careful to use unique file names for files in gists. This bundle will map a unique file name to a unique gist id. If the same file name exists elsewhere, this bundle will assume its the same file from another gist.
-* Although you can download multi-file gists, the create and update processes only work with the current file.
+* Although you can download multi-file gists, the create and update processes only work with the current file. use **Add File to Gist** to create multi-file gists after creating one with an original file.
 
 ## The Cache
 
