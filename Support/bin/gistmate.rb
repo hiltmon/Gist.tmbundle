@@ -301,6 +301,7 @@ class Gistmate
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     
     request = Net::HTTP::Get.new(uri.request_uri)
+    request.add_field('User-Agent', 'TextMate Gists Bundle')
 
     response = TextMate.call_with_progress(:title => 'Gists Progress', 
       :cancel => lambda { TextMate.exit_discard },
@@ -326,6 +327,7 @@ class Gistmate
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     request = Net::HTTP::Post.new(uri.request_uri)
+    request.add_field('User-Agent', 'TextMate Gists Bundle')
     request.body = JSON.generate(make_data(file_names, id, is_private))
     request["Content-Type"] = "application/json"
     user, password = auth()
