@@ -158,7 +158,7 @@ class Gistmate
     gist_id = get_id_from_cache(filename)
     abort_gist_already_exist unless gist_id.nil?
     
-    gist_id = create_gist(filename, is_private)
+    gist_id = create_gist(path, is_private)
     unless gist_id.nil?
       TextMate.exit_show_tool_tip("'#{gist_id}' Created.")
     end
@@ -180,7 +180,7 @@ class Gistmate
     response = api_post_request([filename], "Creating New Gist...", nil, is_private)
     unless response.nil?
       gist_id = response["id"]
-      cache_gist(gist_id, [filename])
+      cache_gist(gist_id, [File.basename(filename)])
       to_pasteboard(gist_id)
       return gist_id
     end
@@ -246,6 +246,12 @@ class Gistmate
     end
     nil
   end
+
+  # For Debugging
+  # def abort_message(message)
+  #   %x{ "$DIALOG" >/dev/null alert --title "Abort Message" --body "Message: #{message}" --button1 OK }
+  #   TextMate.exit_discard
+  # end
   
   def abort_no_auth
     %x{ "$DIALOG" >/dev/null alert --title "GitHub authentication error." --body "To setup authentication you should run the following in a terminal:\n\ngit config --global github.user «username»\ngit config --global github.password «password»" --button1 OK }
@@ -351,6 +357,7 @@ class Gistmate
   end
   
   def make_data(file_names, id, is_private)
+    # abort_message("XXX #{Dir.pwd} #{file_names}")
     file_data = {}
     file_names.each do |file_name|
       if File.basename(file_name) =~ /^xyzzy-gist/
