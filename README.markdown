@@ -8,7 +8,7 @@ A command-line version is available at [hiltmon/gist](https://github.com/hiltmon
 
 **Warning:** Before you can create, update or pick gists, you need to set up Authentication (see below)
 
-In TextMate, hit `⌃⌘G` to bring up the Gists menu (or pick it from the `cog` menu in the status bar):
+In TextMate, hit `⇧⌃⌘J` to bring up the Gists menu (or pick it from the `cog` menu in the status bar):
 
 * **Get Gist:** Brings up a dialog where you can paste the Gist ID or URL to retrieve. If any text is selected, it guesses the last number is the gist id. *Get Gist* downloads all the files in the gist to the current folder, saves them and opens them in TextMate 2. **Note:** If a file name already exists, *Get Gist* overwrites it.
 * **Pick my Gists:** Displays up to 100 (API limit) of your own Gists to get. Select a gist to download all the files in that gist, save them and open them in TextMate. **Note:** If a file name already exists, *Pick my Gist* overwrites it.
@@ -18,7 +18,7 @@ In TextMate, hit `⌃⌘G` to bring up the Gists menu (or pick it from the `cog`
 * **Add File to Gist:** Brings up a list of your gists and enables you to add the current file to the gist you choose.
 * **Create Public Gist:** Creates a new public gist containing the current file's contents. Leaves the URL of the new gist on the clipboard.
 * **Create Private Gist:** Creates a new private to you only gist containing the current file's contents. Leaves the URL of the new gist on the clipboard.
-* **Gist from Selection:** Creates a new *public* gist with the contents of the selection, leaving the URL of the new gist on the clipboard. **Note** that these gists are not cached as they have no file names.
+* **Gist from Selection:** Creates a new *public* gist with the contents of the selection, leaving the URL of the new gist on the clipboard. **Note** that these gists are not cached as they have no file names.  It also assumes the language for the file extension the selection comes from (if the file is saved).
 
 Some limitations to be aware of:
 
