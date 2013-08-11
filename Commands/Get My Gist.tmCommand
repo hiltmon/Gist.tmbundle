@@ -16,7 +16,7 @@ Gistmate.new().pick()
 	<key>inputFormat</key>
 	<string>text</string>
 	<key>keyEquivalent</key>
-	<string>^@g</string>
+	<string>^@J</string>
 	<key>name</key>
 	<string>Pick My Gists…</string>
 	<key>outputCaret</key>

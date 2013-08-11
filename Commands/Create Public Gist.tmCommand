@@ -19,7 +19,7 @@ Gistmate.new().create(ENV['TM_FILEPATH'], false) # is_private =&gt; false
 	<key>inputFormat</key>
 	<string>text</string>
 	<key>keyEquivalent</key>
-	<string>^@g</string>
+	<string>^@J</string>
 	<key>name</key>
 	<string>Create Public Gist</string>
 	<key>outputCaret</key>

@@ -16,7 +16,7 @@ Gistmate.new().url(ENV['TM_FILEPATH'])
 	<key>inputFormat</key>
 	<string>text</string>
 	<key>keyEquivalent</key>
-	<string>^@g</string>
+	<string>^@J</string>
 	<key>name</key>
 	<string>Copy Gist URL</string>
 	<key>outputCaret</key>

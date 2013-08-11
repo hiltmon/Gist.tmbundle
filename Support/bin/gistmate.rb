@@ -164,11 +164,16 @@ class Gistmate
     end
   end
   
-  def create_from_selection(content)
+  def create_from_selection(content, path)
     abort_no_auth if no_auth?
     abort_no_selection if content.nil? || content.length == 0
+    if path.nil? || path.length == 0
+      ext = ''
+    else
+      ext = File.extname(path)
+    end
     
-    gist_id = create_temp_gist(content)
+    gist_id = create_temp_gist(content, ext)
     unless gist_id.nil?
       TextMate.exit_show_tool_tip("'#{gist_id}' Created.")
     end
@@ -187,8 +192,9 @@ class Gistmate
     nil
   end
   
-  def create_temp_gist(content)
-    temp_file = Tempfile.new('xyzzy-gist')
+  def create_temp_gist(content, ext)
+    # temp_file = Tempfile.new("xyzzy-gist#{ext}")
+    temp_file = Tempfile.new("xyzzygist#{ext}-") # Hyphen needed to clean up file name on send
     File.open(temp_file.path, "w") do |f| # Ruby 1.8 Style (not IO.write)
       f << content
     end
@@ -360,8 +366,8 @@ class Gistmate
     # abort_message("XXX #{Dir.pwd} #{file_names}")
     file_data = {}
     file_names.each do |file_name|
-      if File.basename(file_name) =~ /^xyzzy-gist/
-        file_data[""] = {:content => IO.read(file_name).to_s }
+      if File.basename(file_name) =~ /^xyzzygist/
+        file_data[File.basename(file_name).split('-')[0].sub!('xyzzygist', 'selection')] = {:content => IO.read(file_name).to_s }
       else
         file_data[File.basename(file_name)] = {:content => IO.read(file_name).to_s }
       end

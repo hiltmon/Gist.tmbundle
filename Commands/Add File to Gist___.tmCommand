@@ -19,7 +19,7 @@ Gistmate.new().add_file_to_gist(ENV['TM_FILEPATH'])
 	<key>inputFormat</key>
 	<string>text</string>
 	<key>keyEquivalent</key>
-	<string>^@g</string>
+	<string>^@J</string>
 	<key>name</key>
 	<string>Add File to Gist...</string>
 	<key>outputCaret</key>

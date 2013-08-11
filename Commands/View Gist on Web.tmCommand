@@ -16,7 +16,7 @@ Gistmate.new().view_on_web(ENV['TM_FILEPATH'])
 	<key>inputFormat</key>
 	<string>text</string>
 	<key>keyEquivalent</key>
-	<string>^@g</string>
+	<string>^@J</string>
 	<key>name</key>
 	<string>View Gist on Web</string>
 	<key>outputCaret</key>

@@ -9,14 +9,14 @@
 
 require "#{ENV["TM_BUNDLE_SUPPORT"]}/bin/gistmate.rb"
 
-Gistmate.new().create_from_selection(ENV['TM_SELECTED_TEXT'])
+Gistmate.new().create_from_selection(ENV['TM_SELECTED_TEXT'], ENV['TM_FILEPATH'])
 </string>
 	<key>input</key>
 	<string>selection</string>
 	<key>inputFormat</key>
 	<string>text</string>
 	<key>keyEquivalent</key>
-	<string>^@g</string>
+	<string>^@J</string>
 	<key>name</key>
 	<string>Gist from Selection</string>
 	<key>outputCaret</key>
