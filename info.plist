@@ -12,6 +12,7 @@
 Notes:
 
 - Since the ⌃⌘F key became full screen and the ⌃⌘G became the search, Gists bundle has gotten in the way. So I have moved the key to ⇧⌃⌘J (for Jist, geddit?).
+- "Gist from Selection" now uses the file extension to set the language on the gist. If the file has not yet been saved, it runs as no extension (or plain text). (NO idea how to get the scope)
 </string>
 	<key>mainMenu</key>
 	<dict>
