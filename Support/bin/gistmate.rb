@@ -57,6 +57,7 @@ class Gistmate
   GIST_URL   = 'https://api.github.com/gists'
   WEB_URL   = 'https://gist.github.com'
   USER_URL   = 'https://api.github.com/users/%s/gists'
+  ACCOUNT_URL   = 'https://api.github.com/user'
   CACHE_FILE_PATH = "#{ENV['HOME']}/.gists"
   
   def get(selection = nil)
@@ -76,7 +77,7 @@ class Gistmate
   
   def pick()
     abort_no_auth if no_auth?
-    user, _ = auth()
+    user = get_login()
     results = list_gists(user)
     
     # Show pick list
@@ -124,11 +125,11 @@ class Gistmate
     abort_no_auth if no_auth?
     filename = File.basename(path)
     
-    gist_id = get_id_from_cache(filename)
-    abort_gist_already_exist unless gist_id.nil?
+    # gist_id = get_id_from_cache(filename)
+    # abort_gist_already_exist unless gist_id.nil?
     
     # Bring up the pick list to add this file
-    user, _ = auth()
+    user = get_login()
     results = list_gists(user)
     
     # Show pick list
@@ -215,16 +216,17 @@ class Gistmate
     data = retrieve_gist(gist_id)
     return if data.nil?
     
-    files_array = []
+    files_array = {}
     data["files"].keys.each do |key|
       content = extract_content(data, key)
-      file_name = extract_file_name(data, key)
-      File.open(file_name, "w") do |f| # Ruby 1.8 Style (not IO.write)
+      file_name = extract_file_name(data, key) || key
+      # file_path = File.expand_path(file_name, )
+      Tempfile.open(file_name) do |f| # Ruby 1.8 Style (not IO.write)
         f << content
+        files_array[file_name] = f.path
       end
-      files_array << file_name
     end
-    cache_gist(gist_id, files_array)
+    cache_gist(gist_id, files_array.keys)
     files_array
   end
   
@@ -254,11 +256,11 @@ class Gistmate
   end
 
   # For Debugging
-  # def abort_message(message)
-  #   %x{ "$DIALOG" >/dev/null alert --title "Abort Message" --body "Message: #{message}" --button1 OK }
-  #   TextMate.exit_discard
-  # end
-  
+  def abort_message(message)
+    %x{ "$DIALOG" >/dev/null alert --title "Abort Message" --body "Message: #{message}" --button1 OK }
+    TextMate.exit_discard
+  end
+
   def abort_no_auth
     %x{ "$DIALOG" >/dev/null alert --title "GitHub authentication error." --body "To setup authentication you should run the following in a terminal:\n\ngit config --global github.user «username»\ngit config --global github.password «password»" --button1 OK }
     TextMate.exit_discard
@@ -285,8 +287,8 @@ class Gistmate
     files_array = get_gist(gist_id)
     unless files_array.nil?
       # Open em
-      files_array.each do |file_name|
-        %x{"$TM_SUPPORT_PATH/bin/mate" #{e_sh file_name}}
+      files_array.each do |file_name, file_path|
+        %x{cat #{e_sh file_path} | "$TM_SUPPORT_PATH/bin/mate" --no-wait -m #{e_sh file_name} -}
       end
     end
   end
@@ -304,7 +306,7 @@ class Gistmate
     # data["files"].map{|name, content| content['filename'] }.join("\n\n")
   end
   
-  def api_get_request(url, message, params = nil)
+  def api_get_request(url, message, params = nil, need_auth = false)
     uri = URI(url)
     uri.query = URI.encode_www_form(params) if params
         
@@ -314,15 +316,23 @@ class Gistmate
     
     request = Net::HTTP::Get.new(uri.request_uri)
     request.add_field('User-Agent', 'TextMate Gists Bundle')
+    request["Content-Type"] = "application/json"
+    if need_auth
+      abort_no_auth if no_auth?
+      user, password = auth()
+      if user && password
+        request.basic_auth(user, password)
+      end
+    end
 
     response = TextMate.call_with_progress(:title => 'Gists Progress', 
       :cancel => lambda { TextMate.exit_discard },
-      :message => message) do
+      :message => [message, uri.request_uri].join(" ")) do
         
       http.request(request)
     end
     if response.code.to_i >= 300
-      puts "Failed: #{response.code}: #{response.body}"
+      abort_message("Failed: #{response.code}: #{response.body}")
       return nil
     end
     JSON.parse(response.body)
@@ -356,7 +366,7 @@ class Gistmate
     # puts response.code
     # puts response.body
     if response.code.to_i >= 300
-      puts "Failed: #{response.code}: #{response.body}"
+      abort_message("Failed: #{response.code}: #{response.body}")
       return nil
     end
     JSON.parse(response.body)
@@ -398,6 +408,11 @@ class Gistmate
     password = ENV['GITHUB_PASSWORD'] if password.to_s.empty?
      
     [ user, password ]
+  end
+  
+  def get_login
+    data = api_get_request(ACCOUNT_URL, "Get login...", nil, true)
+    data['login'] unless data.nil?
   end
   
   def no_file?(file_name)
