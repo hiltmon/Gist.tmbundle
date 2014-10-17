@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -wKU
+#!/usr/bin/env ruby18 -wKU
 
 # gistmate.rb
 # Hilton Lipschitz (http://www.hiltmon.com)
