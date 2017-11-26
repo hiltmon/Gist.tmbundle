@@ -1,6 +1,6 @@
 # Gist.tmbundle
 
-A TextMate 2 bundle to create, get and update GitHub gists. 
+A TextMate 2 bundle to create, get and update GitHub gists.
 
 A command-line version is available at [hiltmon/gist](https://github.com/hiltmon/gist).
 
@@ -35,8 +35,8 @@ You can find this bundle in TextMate → Preferences → Bundles → Gist where 
 
 To install via Git:
 
-    mkdir -p ~/Library/Application\ Support/Avian/Bundles
-    cd ~/Library/Application\ Support/Avian/Bundles
+    mkdir -p ~/Library/Application\ Support/Textmate/Bundles
+    cd ~/Library/Application\ Support/Textmate/Bundles
     git clone git://github.com/hiltmon/Gist.tmbundle
 
 ## Authentication
@@ -45,14 +45,14 @@ There are two ways to set GitHub user and password info:
 
 Using the environment variables vars GITHUB_USER and GITHUB_PASSWORD in either the shell or TextMate variables:
 
-	$ export GITHUB_USER="your-github-username"  
-	$ export GITHUB_PASSWORD="your-github-password"  
+	$ export GITHUB_USER="your-github-username"
+	$ export GITHUB_PASSWORD="your-github-password"
 
 
 Or by having your git config set up with your GitHub username and password **(Recommended)**.
 
-	git config --global github.user "your-github-username"  
-	git config --global github.password "your-github-password"  
+	git config --global github.user "your-github-username"
+	git config --global github.password "your-github-password"
 
 ## Contributing
 
@@ -67,12 +67,11 @@ This is but the first version of this bundle. If you have any ideas or wish to c
 # License
 (The MIT License)
 
-Copyright (c) 2013 Hilton Lipschitz, [http://www.hiltmon.com](http://www.hiltmon.com), [hiltmon@gmail.com](mailto:hiltmon@gmail.com).  
-Includes files from JSON by Florian Frank<flori at ping dot de>.  
+Copyright (c) 2013 Hilton Lipschitz, [http://www.hiltmon.com](http://www.hiltmon.com), [hiltmon@gmail.com](mailto:hiltmon@gmail.com).
+Includes files from JSON by Florian Frank<flori at ping dot de>.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
